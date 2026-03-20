@@ -58,7 +58,7 @@ body::before {
    LAYOUT
    ===================== */
 .wrap {
-  max-width: 720px;
+  max-width: 740px;
   margin: 0 auto;
   position: relative;
   z-index: 1;
@@ -205,14 +205,54 @@ body::before {
   letter-spacing: 2px;
 }
 
+/* Mode toggle row */
+.mode-switch-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.mode-switch-label {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.mode-toggle {
+  display: flex;
+  background-color: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mode-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.mode-btn.is-active {
+  background-color: var(--accent2);
+  color: #071520;
+  font-weight: 600;
+}
+
+/* Settings fields grid */
 .settings-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 16px;
-}
-
-.settings-grid--two {
-  grid-template-columns: 1fr 1fr;
 }
 
 /* =====================
@@ -250,6 +290,7 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
 }
+
 input[type="number"] {
   -moz-appearance: textfield;
 }
@@ -264,13 +305,15 @@ input[type="number"] {
   margin-bottom: 24px;
 }
 
+/* percentage mode: name | revenue | commission | day-pay */
+/* hourly mode:     name | hours   | earned     | day-pay */
 .day-row {
   background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 16px 20px;
   display: grid;
-  grid-template-columns: 90px 1fr 110px 110px;
+  grid-template-columns: 90px 1fr 120px 110px;
   gap: 12px;
   align-items: center;
   transition: border-color 0.2s, transform 0.15s;
@@ -313,30 +356,32 @@ input[type="number"] {
   box-shadow: 0 0 0 3px rgba(56,189,248,0.08);
 }
 
-.day-commission {
+/* Middle column: commission amount or hours × rate */
+.day-mid {
   font-family: var(--font-mono);
   font-size: 13px;
   color: var(--muted);
   text-align: right;
 }
 
-.day-commission.is-commission {
+.day-mid.is-active {
   color: var(--accent2);
 }
 
-.day-earning {
+/* Right column: actual day pay */
+.day-pay {
   font-family: var(--font-mono);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   text-align: right;
   color: var(--muted);
 }
 
-.day-earning.is-commission {
+.day-pay.is-commission {
   color: var(--accent);
 }
 
-.day-earning.is-base {
+.day-pay.is-base {
   color: var(--accent2);
 }
 
@@ -519,56 +564,42 @@ input[type="number"] {
 /* =====================
    RESPONSIVE
    ===================== */
-@media (max-width: 560px) {
+@media (max-width: 600px) {
   .settings-grid {
     grid-template-columns: 1fr 1fr;
   }
 
   .day-row {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 80px 1fr 90px;
   }
 
-  .day-name {
-    grid-column: 1;
+  .day-pay {
+    display: none;
   }
+}
 
-  .day-commission {
-    grid-column: 2;
-    align-self: center;
-  }
-
-  .day-input {
-    grid-column: 1 / -1;
-  }
-
-  .day-earning {
-    grid-column: 1 / -1;
-    text-align: left;
-  }
-
-  .result-grid {
-    grid-template-columns: 1fr 1fr;
+@media (max-width: 400px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
   }
 }
 
 </style>
 </head>
 <body>
-
 <div class="wrap">
 
+  <!-- HEADER -->
   <header class="page-header">
     <div class="title-block">
-      <h1>週薪<span class="title-highlight" id="h1-second">計算器</span></h1>
+      <h1>Weekly<span class="title-highlight" id="h1-second">計算器</span></h1>
       <p class="title-sub" id="title-sub">業績抽成 · 澳幣 AUD · 每週記錄</p>
     </div>
-
     <div class="header-controls">
       <div class="lang-toggle">
         <button class="lang-btn is-active" id="btnZh" onclick="setLang('zh')">中文</button>
         <button class="lang-btn" id="btnEn" onclick="setLang('en')">EN</button>
       </div>
-
       <nav class="week-nav">
         <button class="week-nav-btn" onclick="changeWeek(-1)">‹</button>
         <span class="week-label" id="weekLabel">—</span>
@@ -579,16 +610,38 @@ input[type="number"] {
 
   <!-- SETTINGS -->
   <div class="settings-card">
-    <div class="settings-grid settings-grid--two">
-      <div class="field">
-        <label id="lbl-base">底薪（每天）</label>
-        <input type="number" id="baseSalary" value="100" step="0.01" oninput="recalc()">
-      </div>
-      <div class="field">
-        <label id="lbl-rate">抽成比例 %</label>
-        <input type="number" id="commissionRate" value="40" step="0.1" oninput="recalc()">
+
+    <!-- Commission mode toggle -->
+    <div class="mode-switch-row">
+      <span class="mode-switch-label" id="lbl-commMode">抽成方式</span>
+      <div class="mode-toggle">
+        <button class="mode-btn is-active" id="btnModePercent" onclick="setCommMode('percent')">
+          <span id="lbl-modePercent">百分比 %</span>
+        </button>
+        <button class="mode-btn" id="btnModeHourly" onclick="setCommMode('hourly')">
+          <span id="lbl-modeHourly">時薪制 A$/hr</span>
+        </button>
       </div>
     </div>
+
+    <!-- Fields -->
+    <div class="settings-grid">
+      <div class="field">
+        <label id="lbl-base">每日底薪</label>
+        <input type="number" id="baseSalary" value="100" step="0.01" oninput="recalc()">
+      </div>
+      <!-- Percent mode field -->
+      <div class="field" id="field-percent">
+        <label id="lbl-rate">抽成比例 %</label>
+        <input type="number" id="commissionRate" value="40" step="0.1" min="0" max="100" oninput="recalc()">
+      </div>
+      <!-- Hourly mode field -->
+      <div class="field" id="field-hourly" style="display:none">
+        <label id="lbl-hourlyRate">每小時抽成 (A$)</label>
+        <input type="number" id="hourlyRate" value="40" step="0.01" min="0" oninput="recalc()">
+      </div>
+    </div>
+
   </div>
 
   <!-- DAILY -->
@@ -600,7 +653,7 @@ input[type="number"] {
 
   <div class="result-card">
     <div class="result-grid">
-      <div class="stat">
+      <div class="stat" id="stat-rev-block">
         <div class="stat-label" id="lbl-totalRev">總業績</div>
         <div class="stat-value" id="totalRevenue">A$0.00</div>
       </div>
@@ -633,7 +686,7 @@ input[type="number"] {
     </div>
   </div>
 
-</div>
+</div><!-- /wrap -->
 
 <script>
 
@@ -642,75 +695,104 @@ input[type="number"] {
    ===================== */
 var STRINGS = {
   zh: {
-    h1second:    '計算器',
-    titleSub:    '業績抽成 · 澳幣 AUD · 每週記錄',
-    lblBase:     '底薪（每天）',
-    lblRate:     '抽成比例 %',
-    lblDaily:    '每日業績',
-    lblSummary:  '本週小結',
-    lblTotalRev: '總業績',
-    lblTotalComm:'總抽成',
-    lblFinalPay: '實領薪資',
-    lblWageMode: '計薪方式：',
-    btnCopy:     '複製結果',
-    btnClear:    '清除本週',
-    btnPrint:    '列印',
-    days:        ['週一','週二','週三','週四','週五','週六','週日'],
-    placeholder: '業績金額',
-    noData:      '尚未輸入',
-    commission:  '抽成制為主',
-    base:        '底薪制為主',
-    hintDaily:   function(b,rate){ return '每天底薪 '+b+'，業績 × '+rate+'% 超過底薪則用抽成'; },
-    copyHeader:  '📊 週薪計算紀錄',
-    copyPeriod:  function(s,e){ return '週期：'+s+' – '+e; },
-    copySettings:function(b,r){ return '每日底薪：A$'+b+' ／ 抽成：'+r+'%'; },
-    copyRow:     function(d,dt,r,c,pay){ return d+' '+dt+'：業績 '+r+' → 抽成 '+c+' → 實領 '+pay; },
-    copyTotal:   function(r){ return '總業績：'+r; },
-    copyComm:    function(c){ return '總抽成：'+c; },
-    copyFinal:   function(f){ return '✅ 實領薪資：'+f; },
-    copied:      '✓ 已複製',
-    confirmClear:'確定要清除本週所有業績資料？',
+    h1second:       '計算器',
+    titleSub:       '業績抽成 · 澳幣 AUD · 每週記錄',
+    lblCommMode:    '抽成方式',
+    lblModePercent: '百分比 %',
+    lblModeHourly:  '時薪制 A$/hr',
+    lblBase:        '每日底薪',
+    lblRate:        '抽成比例 %',
+    lblHourlyRate:  '每小時抽成 (A$)',
+    lblDaily:       '每日業績',
+    lblDailyHourly: '每日工時',
+    lblSummary:     '本週小結',
+    lblTotalRev:    '總業績',
+    lblTotalHours:  '總工時 (hrs)',
+    lblTotalComm:   '總抽成',
+    lblFinalPay:    '實領薪資',
+    lblWageMode:    '計薪方式：',
+    btnCopy:        '複製結果',
+    btnClear:       '清除本週',
+    btnPrint:       '列印',
+    days:           ['週一','週二','週三','週四','週五','週六','週日'],
+    phRevenue:      '業績金額',
+    phHours:        '工時 (hrs)',
+    colCommission:  '抽成',
+    colEarned:      '時薪抽成',
+    colPay:         '實領',
+    noData:         '尚未輸入',
+    moreComm:       '抽成制為主',
+    moreBase:       '底薪制為主',
+    hintPercent:    function(b, rate){ return '每日底薪 '+b+'，超過則用業績 × '+rate+'%'; },
+    hintHourly:     function(b, rate){ return '每日底薪 '+b+'，超過則用工時 × A$'+rate+'/hr'; },
+    copyHeader:     '📊 週薪計算紀錄',
+    copyPeriod:     function(s,e){ return '週期：'+s+' – '+e; },
+    copySettingsPct:function(b,r){ return '每日底薪：A$'+b+' ／ 抽成：'+r+'%'; },
+    copySettingsHr: function(b,r){ return '每日底薪：A$'+b+' ／ 時薪抽成：A$'+r+'/hr'; },
+    copyRowPct:     function(d,dt,rev,comm,pay){ return d+' '+dt+'：業績 '+rev+' → 抽成 '+comm+' → 實領 '+pay; },
+    copyRowHr:      function(d,dt,hrs,comm,pay){ return d+' '+dt+'：工時 '+hrs+'hrs → 抽成 '+comm+' → 實領 '+pay; },
+    copyTotal:      function(v){ return '總業績：'+v; },
+    copyTotalHrs:   function(v){ return '總工時：'+v+' hrs'; },
+    copyComm:       function(c){ return '總抽成：'+c; },
+    copyFinal:      function(f){ return '✅ 實領薪資：'+f; },
+    copied:         '✓ 已複製',
+    confirmClear:   '確定要清除本週所有資料？',
   },
   en: {
-    h1second:    'Calculator',
-    titleSub:    'Commission · AUD · Weekly Record',
-    lblBase:     'Base Pay (Daily)',
-    lblRate:     'Commission %',
-    lblDaily:    'Daily Revenue',
-    lblSummary:  'Weekly Summary',
-    lblTotalRev: 'Total Revenue',
-    lblTotalComm:'Total Commission',
-    lblFinalPay: 'Final Pay',
-    lblWageMode: 'Pay Mode:',
-    btnCopy:     'Copy Result',
-    btnClear:    'Clear Week',
-    btnPrint:    'Print',
-    days:        ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-    placeholder: 'Revenue',
-    noData:      'No data yet',
-    commission:  'Mostly Commission',
-    base:        'Mostly Base Pay',
-    hintDaily:   function(b,rate){ return 'Daily base '+b+', commission (×'+rate+'%) wins if higher'; },
-    copyHeader:  '📊 Weekly Pay Record',
-    copyPeriod:  function(s,e){ return 'Period: '+s+' – '+e; },
-    copySettings:function(b,r){ return 'Daily Base: A$'+b+' / Commission: '+r+'%'; },
-    copyRow:     function(d,dt,r,c,pay){ return d+' '+dt+': Revenue '+r+' → Commission '+c+' → Pay '+pay; },
-    copyTotal:   function(r){ return 'Total Revenue: '+r; },
-    copyComm:    function(c){ return 'Total Commission: '+c; },
-    copyFinal:   function(f){ return '✅ Final Pay: '+f; },
-    copied:      '✓ Copied',
-    confirmClear:'Clear all revenue data for this week?',
+    h1second:       'Calculator',
+    titleSub:       'Commission · AUD · Weekly Record',
+    lblCommMode:    'Commission Mode',
+    lblModePercent: 'Percentage %',
+    lblModeHourly:  'Hourly A$/hr',
+    lblBase:        'Daily Base Pay',
+    lblRate:        'Commission %',
+    lblHourlyRate:  'Rate per Hour (A$)',
+    lblDaily:       'Daily Revenue',
+    lblDailyHourly: 'Daily Hours',
+    lblSummary:     'Weekly Summary',
+    lblTotalRev:    'Total Revenue',
+    lblTotalHours:  'Total Hours',
+    lblTotalComm:   'Total Commission',
+    lblFinalPay:    'Final Pay',
+    lblWageMode:    'Pay Mode:',
+    btnCopy:        'Copy Result',
+    btnClear:       'Clear Week',
+    btnPrint:       'Print',
+    days:           ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    phRevenue:      'Revenue',
+    phHours:        'Hours',
+    colCommission:  'Commission',
+    colEarned:      'Hrly Comm.',
+    colPay:         'Day Pay',
+    noData:         'No data yet',
+    moreComm:       'Mostly Commission',
+    moreBase:       'Mostly Base Pay',
+    hintPercent:    function(b, rate){ return 'Base '+b+'/day, commission wins if revenue × '+rate+'% > base'; },
+    hintHourly:     function(b, rate){ return 'Base '+b+'/day, commission wins if hours × A$'+rate+' > base'; },
+    copyHeader:     '📊 Weekly Pay Record',
+    copyPeriod:     function(s,e){ return 'Period: '+s+' – '+e; },
+    copySettingsPct:function(b,r){ return 'Daily Base: A$'+b+' / Commission: '+r+'%'; },
+    copySettingsHr: function(b,r){ return 'Daily Base: A$'+b+' / Hourly Rate: A$'+r+'/hr'; },
+    copyRowPct:     function(d,dt,rev,comm,pay){ return d+' '+dt+': Revenue '+rev+' → Comm '+comm+' → Pay '+pay; },
+    copyRowHr:      function(d,dt,hrs,comm,pay){ return d+' '+dt+': '+hrs+'hrs → Comm '+comm+' → Pay '+pay; },
+    copyTotal:      function(v){ return 'Total Revenue: '+v; },
+    copyTotalHrs:   function(v){ return 'Total Hours: '+v; },
+    copyComm:       function(c){ return 'Total Commission: '+c; },
+    copyFinal:      function(f){ return '✅ Final Pay: '+f; },
+    copied:         '✓ Copied',
+    confirmClear:   'Clear all data for this week?',
   }
 };
 
 /* =====================
    STATE
    ===================== */
-var lang = localStorage.getItem('salary_lang') || 'zh';
+var lang       = localStorage.getItem('salary_lang')  || 'zh';
+var commMode   = localStorage.getItem('salary_mode')  || 'percent'; // 'percent' | 'hourly'
 var weekOffset = 0;
 
 /* =====================
-   LANGUAGE SWITCH
+   LANGUAGE
    ===================== */
 function setLang(l) {
   lang = l;
@@ -724,19 +806,44 @@ function setLang(l) {
 
 function applyStrings() {
   var s = STRINGS[lang];
-  document.getElementById('h1-second').textContent    = s.h1second;
-  document.getElementById('title-sub').textContent    = s.titleSub;
-  document.getElementById('lbl-base').textContent     = s.lblBase;
-  document.getElementById('lbl-rate').textContent     = s.lblRate;
-  document.getElementById('lbl-daily').textContent    = s.lblDaily;
-  document.getElementById('lbl-summary').textContent  = s.lblSummary;
-  document.getElementById('lbl-totalRev').textContent = s.lblTotalRev;
-  document.getElementById('lbl-totalComm').textContent= s.lblTotalComm;
-  document.getElementById('lbl-finalPay').textContent = s.lblFinalPay;
-  document.getElementById('lbl-wageMode').textContent = s.lblWageMode;
-  document.getElementById('btnCopy').textContent      = s.btnCopy;
-  document.getElementById('btnClear').textContent     = s.btnClear;
-  document.getElementById('btnPrint').textContent     = s.btnPrint;
+  document.getElementById('h1-second').textContent       = s.h1second;
+  document.getElementById('title-sub').textContent       = s.titleSub;
+  document.getElementById('lbl-commMode').textContent    = s.lblCommMode;
+  document.getElementById('lbl-modePercent').textContent = s.lblModePercent;
+  document.getElementById('lbl-modeHourly').textContent  = s.lblModeHourly;
+  document.getElementById('lbl-base').textContent        = s.lblBase;
+  document.getElementById('lbl-rate').textContent        = s.lblRate;
+  document.getElementById('lbl-hourlyRate').textContent  = s.lblHourlyRate;
+  document.getElementById('lbl-daily').textContent       = commMode === 'percent' ? s.lblDaily : s.lblDailyHourly;
+  document.getElementById('lbl-summary').textContent     = s.lblSummary;
+  document.getElementById('lbl-totalRev').textContent    = commMode === 'percent' ? s.lblTotalRev : s.lblTotalHours;
+  document.getElementById('lbl-totalComm').textContent   = s.lblTotalComm;
+  document.getElementById('lbl-finalPay').textContent    = s.lblFinalPay;
+  document.getElementById('lbl-wageMode').textContent    = s.lblWageMode;
+  document.getElementById('btnCopy').textContent         = s.btnCopy;
+  document.getElementById('btnClear').textContent        = s.btnClear;
+  document.getElementById('btnPrint').textContent        = s.btnPrint;
+}
+
+/* =====================
+   COMMISSION MODE
+   ===================== */
+function setCommMode(mode) {
+  commMode = mode;
+  localStorage.setItem('salary_mode', mode);
+
+  document.getElementById('btnModePercent').classList.toggle('is-active', mode === 'percent');
+  document.getElementById('btnModeHourly').classList.toggle('is-active', mode === 'hourly');
+  document.getElementById('field-percent').style.display = mode === 'percent' ? '' : 'none';
+  document.getElementById('field-hourly').style.display  = mode === 'hourly'  ? '' : 'none';
+
+  // Update section label and stat label
+  var s = STRINGS[lang];
+  document.getElementById('lbl-daily').textContent    = mode === 'percent' ? s.lblDaily : s.lblDailyHourly;
+  document.getElementById('lbl-totalRev').textContent = mode === 'percent' ? s.lblTotalRev : s.lblTotalHours;
+
+  buildDayRows();
+  loadData();
 }
 
 /* =====================
@@ -758,7 +865,7 @@ function formatDate(d) {
 
 function getWeekKey(offset) {
   var start = getWeekStart(offset);
-  return 'week_' + start.toISOString().slice(0, 10);
+  return 'week_' + start.toISOString().slice(0, 10) + '_' + commMode;
 }
 
 function updateWeekLabel() {
@@ -777,13 +884,14 @@ function changeWeek(dir) {
 }
 
 /* =====================
-   BUILD ROWS
+   BUILD DAY ROWS
    ===================== */
 function buildDayRows() {
   var container = document.getElementById('daysContainer');
   container.innerHTML = '';
   var start = getWeekStart(weekOffset);
   var s = STRINGS[lang];
+  var isHourly = commMode === 'hourly';
 
   for (var i = 0; i < 7; i++) {
     var date = new Date(start);
@@ -793,9 +901,9 @@ function buildDayRows() {
     row.className = 'day-row';
     row.id = 'row-' + i;
 
+    // Day name + date
     var nameDiv = document.createElement('div');
     nameDiv.className = 'day-name';
-
     var nameText = document.createTextNode(s.days[i]);
     var dateSpan = document.createElement('span');
     dateSpan.className = 'day-date';
@@ -803,29 +911,32 @@ function buildDayRows() {
     nameDiv.appendChild(nameText);
     nameDiv.appendChild(dateSpan);
 
+    // Main input
     var input = document.createElement('input');
     input.type = 'number';
-    input.id = 'revenue-' + i;
+    input.id = 'primary-' + i;
     input.className = 'day-input';
-    input.placeholder = s.placeholder;
+    input.placeholder = isHourly ? s.phHours : s.phRevenue;
     input.min = '0';
-    input.step = '0.01';
+    input.step = isHourly ? '0.25' : '0.01';
     input.addEventListener('input', function() { recalc(); saveData(); });
 
-    var commDiv = document.createElement('div');
-    commDiv.className = 'day-commission';
-    commDiv.id = 'comm-' + i;
-    commDiv.textContent = '—';
+    // Middle col: commission amount
+    var midDiv = document.createElement('div');
+    midDiv.className = 'day-mid';
+    midDiv.id = 'mid-' + i;
+    midDiv.textContent = '—';
 
-    var earnDiv = document.createElement('div');
-    earnDiv.className = 'day-earning';
-    earnDiv.id = 'earn-' + i;
-    earnDiv.textContent = '—';
+    // Right col: day pay
+    var payDiv = document.createElement('div');
+    payDiv.className = 'day-pay';
+    payDiv.id = 'pay-' + i;
+    payDiv.textContent = '—';
 
     row.appendChild(nameDiv);
     row.appendChild(input);
-    row.appendChild(commDiv);
-    row.appendChild(earnDiv);
+    row.appendChild(midDiv);
+    row.appendChild(payDiv);
     container.appendChild(row);
   }
 }
@@ -837,81 +948,91 @@ function fmt(n) {
   return 'A$' + n.toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function fmtHrs(n) {
+  return n % 1 === 0 ? n + ' hrs' : n.toFixed(2) + ' hrs';
+}
+
 /* =====================
    RECALC
    ===================== */
 function recalc() {
   var dailyBase = parseFloat(document.getElementById('baseSalary').value) || 0;
-  var rate      = parseFloat(document.getElementById('commissionRate').value) || 0;
-  var s         = STRINGS[lang];
-  var totalRev      = 0;
+  var isHourly  = commMode === 'hourly';
+  var rate      = isHourly
+    ? (parseFloat(document.getElementById('hourlyRate').value) || 0)
+    : (parseFloat(document.getElementById('commissionRate').value) || 0);
+
+  var s             = STRINGS[lang];
+  var totalPrimary  = 0; // revenue (pct) or hours (hourly)
   var totalComm     = 0;
   var totalFinalPay = 0;
   var daysWorked    = 0;
 
   for (var i = 0; i < 7; i++) {
-    var inputEl = document.getElementById('revenue-' + i);
+    var inputEl = document.getElementById('primary-' + i);
+    var midEl   = document.getElementById('mid-' + i);
+    var payEl   = document.getElementById('pay-' + i);
     if (!inputEl) continue;
-    var rev  = parseFloat(inputEl.value) || 0;
-    var comm = rev * rate / 100;
 
-    // Per-day logic: use commission if it exceeds daily base, else use daily base
-    var dayPay = 0;
-    var modeEl = document.getElementById('earn-' + i);
-    var commEl = document.getElementById('comm-' + i);
+    var primary = parseFloat(inputEl.value) || 0;
+    var comm    = isHourly ? (primary * rate) : (primary * rate / 100);
 
-    if (rev > 0) {
+    if (primary > 0) {
       daysWorked++;
-      totalRev  += rev;
-      totalComm += comm;
+      totalPrimary += primary;
+      totalComm    += comm;
+
+      midEl.textContent = fmt(comm);
 
       if (comm > dailyBase) {
-        dayPay = comm;
-        commEl.textContent = fmt(comm);
-        commEl.className   = 'day-commission is-commission';
-        modeEl.textContent = fmt(comm);
-        modeEl.className   = 'day-earning is-commission';
+        totalFinalPay += comm;
+        midEl.className = 'day-mid is-active';
+        payEl.textContent = fmt(comm);
+        payEl.className   = 'day-pay is-commission';
       } else {
-        dayPay = dailyBase;
-        commEl.textContent = fmt(comm);
-        commEl.className   = 'day-commission';
-        modeEl.textContent = fmt(dailyBase);
-        modeEl.className   = 'day-earning is-base';
+        totalFinalPay += dailyBase;
+        midEl.className = 'day-mid';
+        payEl.textContent = fmt(dailyBase);
+        payEl.className   = 'day-pay is-base';
       }
     } else {
-      commEl.textContent = '—';
-      commEl.className   = 'day-commission';
-      modeEl.textContent = '—';
-      modeEl.className   = 'day-earning';
+      midEl.textContent = '—';
+      midEl.className   = 'day-mid';
+      payEl.textContent = '—';
+      payEl.className   = 'day-pay';
     }
-
-    totalFinalPay += dayPay;
   }
 
-  document.getElementById('totalRevenue').textContent    = fmt(totalRev);
+  // Summary stats
+  if (isHourly) {
+    document.getElementById('totalRevenue').textContent = fmtHrs(totalPrimary);
+  } else {
+    document.getElementById('totalRevenue').textContent = fmt(totalPrimary);
+  }
   document.getElementById('totalCommission').textContent = fmt(totalComm);
   document.getElementById('finalPay').textContent        = fmt(totalFinalPay);
 
-  var badge  = document.getElementById('modeBadge');
-  var hint   = document.getElementById('calcHint');
-  var tipBox = document.getElementById('tipBox');
+  // Mode badge
+  var badge   = document.getElementById('modeBadge');
+  var hint    = document.getElementById('calcHint');
+  var tipBox  = document.getElementById('tipBox');
 
-  if (totalRev === 0) {
+  if (totalPrimary === 0) {
     badge.className   = 'mode-badge is-base';
     badge.textContent = s.noData;
     hint.textContent  = '';
     tipBox.classList.remove('is-visible');
   } else {
-    var maxPossibleComm = totalComm;
-    var maxPossibleBase = dailyBase * daysWorked;
-    if (maxPossibleComm > maxPossibleBase) {
+    if (totalComm > dailyBase * daysWorked) {
       badge.className   = 'mode-badge is-commission';
-      badge.textContent = s.commission;
+      badge.textContent = s.moreComm;
     } else {
       badge.className   = 'mode-badge is-base';
-      badge.textContent = s.base;
+      badge.textContent = s.moreBase;
     }
-    hint.textContent = s.hintDaily(fmt(dailyBase), rate);
+    hint.textContent = isHourly
+      ? s.hintHourly(fmt(dailyBase), rate)
+      : s.hintPercent(fmt(dailyBase), rate);
     tipBox.classList.remove('is-visible');
   }
 
@@ -922,20 +1043,23 @@ function recalc() {
    SAVE / LOAD
    ===================== */
 function saveData() {
-  var revenues = [];
+  var values = [];
   for (var i = 0; i < 7; i++) {
-    var el = document.getElementById('revenue-' + i);
-    revenues.push(el ? el.value : '');
+    var el = document.getElementById('primary-' + i);
+    values.push(el ? el.value : '');
   }
   var weekData = {
     baseSalary:     document.getElementById('baseSalary').value,
     commissionRate: document.getElementById('commissionRate').value,
-    revenues:       revenues
+    hourlyRate:     document.getElementById('hourlyRate').value,
+    values:         values
   };
   localStorage.setItem(getWeekKey(weekOffset), JSON.stringify(weekData));
   localStorage.setItem('salary_settings', JSON.stringify({
     baseSalary:     weekData.baseSalary,
-    commissionRate: weekData.commissionRate
+    commissionRate: weekData.commissionRate,
+    hourlyRate:     weekData.hourlyRate,
+    commMode:       commMode
   }));
 }
 
@@ -943,12 +1067,13 @@ function loadData() {
   var settings = JSON.parse(localStorage.getItem('salary_settings') || '{}');
   if (settings.baseSalary)     document.getElementById('baseSalary').value     = settings.baseSalary;
   if (settings.commissionRate) document.getElementById('commissionRate').value = settings.commissionRate;
+  if (settings.hourlyRate)     document.getElementById('hourlyRate').value     = settings.hourlyRate;
 
   var weekData = JSON.parse(localStorage.getItem(getWeekKey(weekOffset)) || '{}');
-  if (weekData.revenues) {
-    for (var i = 0; i < weekData.revenues.length; i++) {
-      var el = document.getElementById('revenue-' + i);
-      if (el) el.value = weekData.revenues[i];
+  if (weekData.values) {
+    for (var i = 0; i < weekData.values.length; i++) {
+      var el = document.getElementById('primary-' + i);
+      if (el) el.value = weekData.values[i];
     }
   }
   recalc();
@@ -960,7 +1085,7 @@ function loadData() {
 function clearWeek() {
   if (!confirm(STRINGS[lang].confirmClear)) return;
   for (var i = 0; i < 7; i++) {
-    var el = document.getElementById('revenue-' + i);
+    var el = document.getElementById('primary-' + i);
     if (el) el.value = '';
   }
   localStorage.removeItem(getWeekKey(weekOffset));
@@ -971,9 +1096,12 @@ function clearWeek() {
    COPY
    ===================== */
 function copyResult() {
-  var s     = STRINGS[lang];
-  var daily = parseFloat(document.getElementById('baseSalary').value) || 0;
-  var rate  = parseFloat(document.getElementById('commissionRate').value) || 0;
+  var s         = STRINGS[lang];
+  var dailyBase = parseFloat(document.getElementById('baseSalary').value) || 0;
+  var isHourly  = commMode === 'hourly';
+  var rate      = isHourly
+    ? (parseFloat(document.getElementById('hourlyRate').value) || 0)
+    : (parseFloat(document.getElementById('commissionRate').value) || 0);
   var start = getWeekStart(weekOffset);
   var end   = new Date(start);
   end.setDate(start.getDate() + 6);
@@ -981,24 +1109,34 @@ function copyResult() {
   var lines = [
     s.copyHeader,
     s.copyPeriod(formatDate(start), formatDate(end)),
-    s.copySettings(daily.toFixed(2), rate),
+    isHourly ? s.copySettingsHr(dailyBase.toFixed(2), rate) : s.copySettingsPct(dailyBase.toFixed(2), rate),
     ''
   ];
 
+  var totalPrimary = 0;
   for (var i = 0; i < 7; i++) {
-    var el  = document.getElementById('revenue-' + i);
-    var rev = el ? (parseFloat(el.value) || 0) : 0;
-    if (rev > 0) {
-      var comm   = rev * rate / 100;
-      var dayPay = comm > daily ? comm : daily;
-      var d = new Date(start);
+    var el      = document.getElementById('primary-' + i);
+    var primary = el ? (parseFloat(el.value) || 0) : 0;
+    if (primary > 0) {
+      totalPrimary += primary;
+      var comm   = isHourly ? (primary * rate) : (primary * rate / 100);
+      var dayPay = comm > dailyBase ? comm : dailyBase;
+      var d      = new Date(start);
       d.setDate(start.getDate() + i);
-      lines.push(s.copyRow(STRINGS[lang].days[i], formatDate(d), fmt(rev), fmt(comm), fmt(dayPay)));
+      if (isHourly) {
+        lines.push(s.copyRowHr(s.days[i], formatDate(d), primary, fmt(comm), fmt(dayPay)));
+      } else {
+        lines.push(s.copyRowPct(s.days[i], formatDate(d), fmt(primary), fmt(comm), fmt(dayPay)));
+      }
     }
   }
 
   lines.push('');
-  lines.push(s.copyTotal(document.getElementById('totalRevenue').textContent));
+  if (isHourly) {
+    lines.push(s.copyTotalHrs(totalPrimary));
+  } else {
+    lines.push(s.copyTotal(document.getElementById('totalRevenue').textContent));
+  }
   lines.push(s.copyComm(document.getElementById('totalCommission').textContent));
   lines.push(s.copyFinal(document.getElementById('finalPay').textContent));
 
@@ -1013,8 +1151,17 @@ function copyResult() {
    INIT
    ===================== */
 (function() {
+  // Restore saved comm mode
+  var savedSettings = JSON.parse(localStorage.getItem('salary_settings') || '{}');
+  if (savedSettings.commMode) commMode = savedSettings.commMode;
+
   document.getElementById('btnZh').classList.toggle('is-active', lang === 'zh');
   document.getElementById('btnEn').classList.toggle('is-active', lang === 'en');
+  document.getElementById('btnModePercent').classList.toggle('is-active', commMode === 'percent');
+  document.getElementById('btnModeHourly').classList.toggle('is-active', commMode === 'hourly');
+  document.getElementById('field-percent').style.display = commMode === 'percent' ? '' : 'none';
+  document.getElementById('field-hourly').style.display  = commMode === 'hourly'  ? '' : 'none';
+
   applyStrings();
   updateWeekLabel();
   buildDayRows();
