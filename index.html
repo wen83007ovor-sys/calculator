@@ -9,23 +9,33 @@
 <style>
 
 /* =====================
-VARIABLES & RESET
+VARIABLES
 ===================== */
 :root {
-–bg:        #0f0f11;
-–surface:   #18181c;
-–surface2:  #222228;
-–border:    #2e2e38;
-–accent:    #7ee8a2;
-–accent2:   #38bdf8;
-–warn:      #fb923c;
-–text:      #e8e8f0;
-–muted:     #6b6b80;
-–radius:    12px;
-–font-body: ‘Noto Sans TC’, sans-serif;
-–font-mono: ‘DM Mono’, monospace;
+–bg:           #1e2130;
+–surface:      #272b3d;
+–surface2:     #303550;
+–border:       #3e4560;
+–text:         #dde2f0;
+–muted:        #7880a8;
+–positive:     #68c496;
+–neutral:      #68aee0;
+–warn:         #dea060;
+–focus-pos:    rgba(104,196,150,0.16);
+–focus-neu:    rgba(104,174,224,0.16);
+–badge-pos-bg: rgba(104,196,150,0.12);
+–badge-pos-bd: rgba(104,196,150,0.32);
+–badge-neu-bg: rgba(104,174,224,0.12);
+–badge-neu-bd: rgba(104,174,224,0.32);
+–btn-text:     #0c2018;
+–btn2-text:    #091828;
+–shadow:       0 2px 10px rgba(0,0,0,0.3);
+–radius:       12px;
 }
 
+/* =====================
+RESET
+===================== */
 *, *::before, *::after {
 box-sizing: border-box;
 margin: 0;
@@ -38,21 +48,9 @@ BASE
 body {
 background-color: var(–bg);
 color: var(–text);
-font-family: var(–font-body);
+font-family: ‘Noto Sans TC’, sans-serif;
 min-height: 100vh;
 padding: 32px 16px 64px;
-}
-
-body::before {
-content: ‘’;
-position: fixed;
-inset: 0;
-background-image:
-linear-gradient(rgba(126,232,162,0.03) 1px, transparent 1px),
-linear-gradient(90deg, rgba(126,232,162,0.03) 1px, transparent 1px);
-background-size: 40px 40px;
-pointer-events: none;
-z-index: 0;
 }
 
 /* =====================
@@ -61,8 +59,6 @@ LAYOUT
 .wrap {
 max-width: 740px;
 margin: 0 auto;
-position: relative;
-z-index: 1;
 }
 
 /* =====================
@@ -85,7 +81,7 @@ line-height: 1.1;
 }
 
 .title-highlight {
-color: var(–accent);
+color: var(–positive);
 }
 
 .title-sub {
@@ -117,7 +113,7 @@ overflow: hidden;
 background: transparent;
 border: none;
 color: var(–muted);
-font-family: var(–font-mono);
+font-family: ‘DM Mono’, monospace;
 font-size: 12px;
 padding: 6px 14px;
 cursor: pointer;
@@ -125,9 +121,9 @@ transition: background-color 0.2s, color 0.2s;
 }
 
 .lang-btn.is-active {
-background-color: var(–accent);
-color: #0f1a14;
-font-weight: 500;
+background-color: var(–positive);
+color: var(–btn-text);
+font-weight: 600;
 }
 
 .week-nav {
@@ -144,8 +140,8 @@ font-size: 16px;
 padding: 6px 12px;
 border-radius: 6px;
 cursor: pointer;
+font-family: ‘Noto Sans TC’, sans-serif;
 transition: color 0.2s, border-color 0.2s;
-font-family: var(–font-body);
 }
 
 .week-nav-btn:hover {
@@ -154,10 +150,10 @@ border-color: var(–text);
 }
 
 .week-label {
-font-family: var(–font-mono);
+font-family: ‘DM Mono’, monospace;
 font-size: 13px;
 color: var(–muted);
-min-width: 160px;
+min-width: 190px;
 text-align: center;
 }
 
@@ -193,6 +189,7 @@ padding: 24px;
 margin-bottom: 24px;
 position: relative;
 overflow: hidden;
+box-shadow: var(–shadow);
 }
 
 .settings-card::before {
@@ -200,13 +197,12 @@ content: ‘SETTINGS’;
 position: absolute;
 top: 16px;
 right: 16px;
-font-family: var(–font-mono);
+font-family: ‘DM Mono’, monospace;
 font-size: 10px;
 color: var(–border);
 letter-spacing: 2px;
 }
 
-/* Mode toggle row */
 .mode-switch-row {
 display: flex;
 align-items: center;
@@ -235,21 +231,20 @@ overflow: hidden;
 background: transparent;
 border: none;
 color: var(–muted);
-font-family: var(–font-body);
+font-family: ‘Noto Sans TC’, sans-serif;
 font-size: 13px;
 padding: 8px 18px;
 cursor: pointer;
-transition: background-color 0.2s, color 0.2s;
 white-space: nowrap;
+transition: background-color 0.2s, color 0.2s;
 }
 
 .mode-btn.is-active {
-background-color: var(–accent2);
-color: #071520;
+background-color: var(–neutral);
+color: var(–btn2-text);
 font-weight: 600;
 }
 
-/* Settings fields grid */
 .settings-grid {
 display: grid;
 grid-template-columns: 1fr 1fr 1fr;
@@ -276,15 +271,15 @@ border: 1px solid var(–border);
 border-radius: 8px;
 color: var(–text);
 font-size: 15px;
-font-family: var(–font-mono);
+font-family: ‘DM Mono’, monospace;
 padding: 10px 12px;
-transition: border-color 0.2s, box-shadow 0.2s;
 outline: none;
+transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .field input:focus {
-border-color: var(–accent);
-box-shadow: 0 0 0 3px rgba(126,232,162,0.08);
+border-color: var(–positive);
+box-shadow: 0 0 0 3px var(–focus-pos);
 }
 
 .field input::placeholder {
@@ -311,22 +306,21 @@ gap: 8px;
 margin-bottom: 24px;
 }
 
-/* percentage mode: name | revenue | commission | day-pay */
-/* hourly mode:     name | hours   | earned     | day-pay */
 .day-row {
 background-color: var(–surface);
 border: 1px solid var(–border);
 border-radius: var(–radius);
-padding: 16px 20px;
+padding: 14px 20px;
 display: grid;
 grid-template-columns: 90px 1fr 120px 110px;
 gap: 12px;
 align-items: center;
+box-shadow: var(–shadow);
 transition: border-color 0.2s, transform 0.15s;
 }
 
 .day-row:hover {
-border-color: rgba(126,232,162,0.3);
+border-color: var(–positive);
 transform: translateX(2px);
 }
 
@@ -341,7 +335,7 @@ gap: 2px;
 .day-date {
 font-size: 11px;
 color: var(–muted);
-font-family: var(–font-mono);
+font-family: ‘DM Mono’, monospace;
 }
 
 .day-input {
@@ -349,7 +343,7 @@ background-color: var(–surface2);
 border: 1px solid var(–border);
 border-radius: 8px;
 color: var(–text);
-font-family: var(–font-mono);
+font-family: ‘DM Mono’, monospace;
 font-size: 14px;
 padding: 8px 12px;
 outline: none;
@@ -358,38 +352,32 @@ transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .day-input:focus {
-border-color: var(–accent2);
-box-shadow: 0 0 0 3px rgba(56,189,248,0.08);
+border-color: var(–neutral);
+box-shadow: 0 0 0 3px var(–focus-neu);
 }
 
-/* Middle column: commission amount or hours × rate */
 .day-mid {
-font-family: var(–font-mono);
+font-family: ‘DM Mono’, monospace;
 font-size: 13px;
 color: var(–muted);
 text-align: right;
+transition: color 0.2s;
 }
 
 .day-mid.is-active {
-color: var(–accent2);
+color: var(–neutral);
 }
 
-/* Right column: actual day pay */
 .day-pay {
-font-family: var(–font-mono);
+font-family: ‘DM Mono’, monospace;
 font-size: 14px;
 font-weight: 600;
 text-align: right;
 color: var(–muted);
 }
 
-.day-pay.is-commission {
-color: var(–accent);
-}
-
-.day-pay.is-base {
-color: var(–accent2);
-}
+.day-pay.is-commission { color: var(–positive); }
+.day-pay.is-base       { color: var(–neutral); }
 
 /* =====================
 RESULT CARD
@@ -401,16 +389,15 @@ border-radius: var(–radius);
 padding: 28px 24px;
 position: relative;
 overflow: hidden;
+box-shadow: var(–shadow);
 }
 
 .result-card::after {
 content: ‘’;
 position: absolute;
-top: 0;
-left: 0;
-right: 0;
-height: 2px;
-background: linear-gradient(90deg, var(–accent), var(–accent2));
+top: 0; left: 0; right: 0;
+height: 3px;
+background: linear-gradient(90deg, var(–positive), var(–neutral));
 }
 
 .result-grid {
@@ -433,20 +420,20 @@ letter-spacing: 1px;
 text-transform: uppercase;
 }
 
+.stat-value {
+font-family: ‘DM Mono’, monospace;
+font-size: 20px;
+font-weight: 500;
+}
+
 .stat.is-highlight {
 grid-column: 1 / -1;
 padding-top: 16px;
 border-top: 1px solid var(–border);
 }
 
-.stat-value {
-font-family: var(–font-mono);
-font-size: 20px;
-font-weight: 500;
-}
-
 .stat.is-highlight .stat-value {
-color: var(–accent);
+color: var(–positive);
 font-size: 32px;
 }
 
@@ -486,7 +473,7 @@ padding: 5px 12px;
 border-radius: 100px;
 font-size: 12px;
 font-weight: 500;
-font-family: var(–font-mono);
+font-family: ‘DM Mono’, monospace;
 }
 
 .mode-badge::before {
@@ -495,21 +482,21 @@ font-size: 8px;
 }
 
 .mode-badge.is-commission {
-background-color: rgba(126,232,162,0.12);
-color: var(–accent);
-border: 1px solid rgba(126,232,162,0.3);
+background-color: var(–badge-pos-bg);
+color: var(–positive);
+border: 1px solid var(–badge-pos-bd);
 }
 
 .mode-badge.is-base {
-background-color: rgba(56,189,248,0.12);
-color: var(–accent2);
-border: 1px solid rgba(56,189,248,0.3);
+background-color: var(–badge-neu-bg);
+color: var(–neutral);
+border: 1px solid var(–badge-neu-bd);
 }
 
 .calc-hint {
 font-size: 12px;
 color: var(–muted);
-font-family: var(–font-mono);
+font-family: ‘DM Mono’, monospace;
 }
 
 /* =====================
@@ -517,18 +504,16 @@ TIP BOX
 ===================== */
 .tip-box {
 display: none;
-background-color: rgba(251,146,60,0.06);
-border: 1px solid rgba(251,146,60,0.2);
 border-radius: 8px;
 padding: 12px 16px;
 font-size: 12px;
 color: var(–warn);
+background-color: rgba(222,160,96,0.08);
+border: 1px solid rgba(222,160,96,0.25);
 margin-top: 16px;
 }
 
-.tip-box.is-visible {
-display: block;
-}
+.tip-box.is-visible { display: block; }
 
 /* =====================
 ACTIONS
@@ -547,18 +532,18 @@ font-size: 13px;
 font-weight: 500;
 cursor: pointer;
 border: none;
-font-family: var(–font-body);
+font-family: ‘Noto Sans TC’, sans-serif;
 letter-spacing: 0.3px;
-transition: background-color 0.15s, color 0.15s, border-color 0.15s, transform 0.15s;
+transition: filter 0.15s, transform 0.15s;
 }
 
 .btn-primary {
-background-color: var(–accent);
-color: #0f1a14;
+background-color: var(–positive);
+color: var(–btn-text);
 }
 
 .btn-primary:hover {
-background-color: #9ef5bc;
+filter: brightness(1.1);
 transform: translateY(-1px);
 }
 
@@ -566,6 +551,7 @@ transform: translateY(-1px);
 background-color: transparent;
 border: 1px solid var(–border);
 color: var(–muted);
+transition: border-color 0.2s, color 0.2s;
 }
 
 .btn-ghost:hover {
@@ -577,23 +563,13 @@ color: var(–text);
 RESPONSIVE
 ===================== */
 @media (max-width: 600px) {
-.settings-grid {
-grid-template-columns: 1fr 1fr;
-}
-
-.day-row {
-grid-template-columns: 80px 1fr 90px;
-}
-
-.day-pay {
-display: none;
-}
+.settings-grid { grid-template-columns: 1fr 1fr; }
+.day-row       { grid-template-columns: 80px 1fr 90px; }
+.day-pay       { display: none; }
 }
 
 @media (max-width: 400px) {
-.settings-grid {
-grid-template-columns: 1fr;
-}
+.settings-grid { grid-template-columns: 1fr; }
 }
 
 </style>
@@ -624,40 +600,31 @@ grid-template-columns: 1fr;
   <!-- SETTINGS -->
 
   <div class="settings-card">
-
-```
-<!-- Commission mode toggle -->
-<div class="mode-switch-row">
-  <span class="mode-switch-label" id="lbl-commMode">抽成方式</span>
-  <div class="mode-toggle">
-    <button class="mode-btn is-active" id="btnModePercent" onclick="setCommMode('percent')">
-      <span id="lbl-modePercent">百分比 %</span>
-    </button>
-    <button class="mode-btn" id="btnModeHourly" onclick="setCommMode('hourly')">
-      <span id="lbl-modeHourly">時薪制 A$/hr</span>
-    </button>
-  </div>
-</div>
-
-<!-- Fields -->
-<div class="settings-grid">
-  <div class="field">
-    <label id="lbl-base">每日底薪</label>
-    <input type="number" id="baseSalary" placeholder="100" step="0.01" min="0" oninput="recalc()">
-  </div>
-  <!-- Percent mode field -->
-  <div class="field" id="field-percent">
-    <label id="lbl-rate">抽成比例 %</label>
-    <input type="number" id="commissionRate" placeholder="40" step="0.1" min="0" max="100" oninput="recalc()">
-  </div>
-  <!-- Hourly mode field -->
-  <div class="field" id="field-hourly" style="display:none">
-    <label id="lbl-hourlyRate">每小時抽成 (A$)</label>
-    <input type="number" id="hourlyRate" placeholder="40" step="0.01" min="0" oninput="recalc()">
-  </div>
-</div>
-```
-
+    <div class="mode-switch-row">
+      <span class="mode-switch-label" id="lbl-commMode">抽成方式</span>
+      <div class="mode-toggle">
+        <button class="mode-btn is-active" id="btnModePercent" onclick="setCommMode('percent')">
+          <span id="lbl-modePercent">百分比 %</span>
+        </button>
+        <button class="mode-btn" id="btnModeHourly" onclick="setCommMode('hourly')">
+          <span id="lbl-modeHourly">時薪制 A$/hr</span>
+        </button>
+      </div>
+    </div>
+    <div class="settings-grid">
+      <div class="field">
+        <label id="lbl-base">每日底薪</label>
+        <input type="number" id="baseSalary" placeholder="100" step="0.01" min="0" oninput="recalc()">
+      </div>
+      <div class="field" id="field-percent">
+        <label id="lbl-rate">抽成比例 %</label>
+        <input type="number" id="commissionRate" placeholder="40" step="0.1" min="0" max="100" oninput="recalc()">
+      </div>
+      <div class="field" id="field-hourly" style="display:none">
+        <label id="lbl-hourlyRate">每小時抽成 (A$)</label>
+        <input type="number" id="hourlyRate" placeholder="40" step="0.01" min="0" oninput="recalc()">
+      </div>
+    </div>
   </div>
 
   <!-- DAILY -->
@@ -671,7 +638,7 @@ grid-template-columns: 1fr;
 
   <div class="result-card">
     <div class="result-grid">
-      <div class="stat" id="stat-rev-block">
+      <div class="stat">
         <div class="stat-label" id="lbl-totalRev">總業績</div>
         <div class="stat-value" id="totalRevenue">A$0.00</div>
       </div>
@@ -699,15 +666,15 @@ grid-template-columns: 1fr;
 <div class="tip-box" id="tipBox"></div>
 
 <div class="action-row">
-  <button class="btn btn-primary" id="btnCopy" onclick="copyResult()">複製結果</button>
-  <button class="btn btn-ghost" id="btnClear" onclick="clearWeek()">清除本週</button>
-  <button class="btn btn-ghost" id="btnPrint" onclick="window.print()">列印</button>
+  <button class="btn btn-primary" id="btnCopy"  onclick="copyResult()">複製結果</button>
+  <button class="btn btn-ghost"   id="btnClear" onclick="clearWeek()">清除本週</button>
+  <button class="btn btn-ghost"   id="btnPrint" onclick="window.print()">列印</button>
 </div>
 ```
 
   </div>
 
-</div><!-- /wrap -->
+</div>
 
 <script>
 
@@ -728,7 +695,7 @@ var STRINGS = {
     lblDailyHourly: '每日工時',
     lblSummary:     '本週小結',
     lblTotalRev:    '總業績',
-    lblTotalHours:  '總工時 (hrs)',
+    lblTotalHours:  '總工時',
     lblTotalComm:   '總抽成',
     lblFinalPay:    '實領薪資',
     lblWageMode:    '計薪方式：',
@@ -738,14 +705,11 @@ var STRINGS = {
     days:           ['週一','週二','週三','週四','週五','週六','週日'],
     phRevenue:      '業績金額',
     phHours:        '工時 (hrs)',
-    colCommission:  '抽成',
-    colEarned:      '時薪抽成',
-    colPay:         '實領',
     noData:         '尚未輸入',
     moreComm:       '抽成制為主',
     moreBase:       '底薪制為主',
-    hintPercent:    function(b, rate){ return '每日底薪 '+b+'，超過則用業績 × '+rate+'%'; },
-    hintHourly:     function(b, rate){ return '每日底薪 '+b+'，超過則用工時 × A$'+rate+'/hr'; },
+    hintPercent:    function(b,r){ return '每日底薪 '+b+'，超過則用業績 × '+r+'%'; },
+    hintHourly:     function(b,r){ return '每日底薪 '+b+'，超過則用工時 × A$'+r+'/hr'; },
     copyHeader:     '📊 週薪計算紀錄',
     copyPeriod:     function(s,e){ return '週期：'+s+' – '+e; },
     copySettingsPct:function(b,r){ return '每日底薪：A$'+b+' ／ 抽成：'+r+'%'; },
@@ -757,7 +721,7 @@ var STRINGS = {
     copyComm:       function(c){ return '總抽成：'+c; },
     copyFinal:      function(f){ return '✅ 實領薪資：'+f; },
     copied:         '✓ 已複製',
-    confirmClear:   '確定要清除本週所有資料？',
+    confirmClear:   '確定要清除本週所有資料？'
   },
   en: {
     h1second:       'Calculator',
@@ -782,14 +746,11 @@ var STRINGS = {
     days:           ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
     phRevenue:      'Revenue',
     phHours:        'Hours',
-    colCommission:  'Commission',
-    colEarned:      'Hrly Comm.',
-    colPay:         'Day Pay',
     noData:         'No data yet',
     moreComm:       'Mostly Commission',
     moreBase:       'Mostly Base Pay',
-    hintPercent:    function(b, rate){ return 'Base '+b+'/day, commission wins if revenue × '+rate+'% > base'; },
-    hintHourly:     function(b, rate){ return 'Base '+b+'/day, commission wins if hours × A$'+rate+' > base'; },
+    hintPercent:    function(b,r){ return 'Base '+b+'/day; commission if revenue × '+r+'% > base'; },
+    hintHourly:     function(b,r){ return 'Base '+b+'/day; commission if hours × A$'+r+' > base'; },
     copyHeader:     '📊 Weekly Pay Record',
     copyPeriod:     function(s,e){ return 'Period: '+s+' – '+e; },
     copySettingsPct:function(b,r){ return 'Daily Base: A$'+b+' / Commission: '+r+'%'; },
@@ -801,15 +762,15 @@ var STRINGS = {
     copyComm:       function(c){ return 'Total Commission: '+c; },
     copyFinal:      function(f){ return '✅ Final Pay: '+f; },
     copied:         '✓ Copied',
-    confirmClear:   'Clear all data for this week?',
+    confirmClear:   'Clear all data for this week?'
   }
 };
 
 /* =====================
    STATE
    ===================== */
-var lang       = localStorage.getItem('salary_lang')  || 'zh';
-var commMode   = localStorage.getItem('salary_mode')  || 'percent'; // 'percent' | 'hourly'
+var lang       = localStorage.getItem('salary_lang') || 'zh';
+var commMode   = localStorage.getItem('salary_mode') || 'percent';
 var weekOffset = 0;
 
 /* =====================
@@ -835,7 +796,7 @@ function applyStrings() {
   document.getElementById('lbl-base').textContent        = s.lblBase;
   document.getElementById('lbl-rate').textContent        = s.lblRate;
   document.getElementById('lbl-hourlyRate').textContent  = s.lblHourlyRate;
-  document.getElementById('lbl-daily').textContent       = commMode === 'percent' ? s.lblDaily : s.lblDailyHourly;
+  document.getElementById('lbl-daily').textContent       = commMode === 'percent' ? s.lblDaily    : s.lblDailyHourly;
   document.getElementById('lbl-summary').textContent     = s.lblSummary;
   document.getElementById('lbl-totalRev').textContent    = commMode === 'percent' ? s.lblTotalRev : s.lblTotalHours;
   document.getElementById('lbl-totalComm').textContent   = s.lblTotalComm;
@@ -852,17 +813,13 @@ function applyStrings() {
 function setCommMode(mode) {
   commMode = mode;
   localStorage.setItem('salary_mode', mode);
-
   document.getElementById('btnModePercent').classList.toggle('is-active', mode === 'percent');
   document.getElementById('btnModeHourly').classList.toggle('is-active', mode === 'hourly');
   document.getElementById('field-percent').style.display = mode === 'percent' ? '' : 'none';
   document.getElementById('field-hourly').style.display  = mode === 'hourly'  ? '' : 'none';
-
-  // Update section label and stat label
   var s = STRINGS[lang];
-  document.getElementById('lbl-daily').textContent    = mode === 'percent' ? s.lblDaily : s.lblDailyHourly;
+  document.getElementById('lbl-daily').textContent    = mode === 'percent' ? s.lblDaily    : s.lblDailyHourly;
   document.getElementById('lbl-totalRev').textContent = mode === 'percent' ? s.lblTotalRev : s.lblTotalHours;
-
   buildDayRows();
   loadData();
 }
@@ -871,36 +828,32 @@ function setCommMode(mode) {
    WEEK
    ===================== */
 function getWeekStart(offset) {
-  var now = new Date();
-  var dow = now.getDay();
-  var diffToMon = dow === 0 ? -6 : 1 - dow;
-  var mon = new Date(now);
-  mon.setDate(now.getDate() + diffToMon + (offset || 0) * 7);
+  var now  = new Date();
+  var dow  = now.getDay();
+  var diff = dow === 0 ? -6 : 1 - dow;
+  var mon  = new Date(now);
+  mon.setDate(now.getDate() + diff + (offset || 0) * 7);
   mon.setHours(0, 0, 0, 0);
   return mon;
 }
 
+function pad(n) { return String(n).padStart(2, '0'); }
+
 function formatDate(d) {
-  var dd = String(d.getDate()).padStart(2, '0');
-  var mm = String(d.getMonth() + 1).padStart(2, '0');
-  return dd + '/' + mm;
+  return pad(d.getDate()) + '/' + pad(d.getMonth() + 1);
 }
 
 function formatDateFull(d) {
-  var dd = String(d.getDate()).padStart(2, '0');
-  var mm = String(d.getMonth() + 1).padStart(2, '0');
-  var yyyy = d.getFullYear();
-  return dd + '/' + mm + '/' + yyyy;
+  return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear();
 }
 
 function getWeekKey(offset) {
-  var start = getWeekStart(offset);
-  return 'week_' + start.toISOString().slice(0, 10) + '_' + commMode;
+  return 'week_' + getWeekStart(offset).toISOString().slice(0, 10) + '_' + commMode;
 }
 
 function updateWeekLabel() {
   var start = getWeekStart(weekOffset);
-  var end = new Date(start);
+  var end   = new Date(start);
   end.setDate(start.getDate() + 6);
   document.getElementById('weekLabel').textContent =
     formatDateFull(start) + ' – ' + formatDateFull(end);
@@ -919,8 +872,8 @@ function changeWeek(dir) {
 function buildDayRows() {
   var container = document.getElementById('daysContainer');
   container.innerHTML = '';
-  var start = getWeekStart(weekOffset);
-  var s = STRINGS[lang];
+  var start    = getWeekStart(weekOffset);
+  var s        = STRINGS[lang];
   var isHourly = commMode === 'hourly';
 
   for (var i = 0; i < 7; i++) {
@@ -931,40 +884,35 @@ function buildDayRows() {
     row.className = 'day-row';
     row.id = 'row-' + i;
 
-    // Day name + date
     var nameDiv = document.createElement('div');
     nameDiv.className = 'day-name';
-    var nameText = document.createTextNode(s.days[i]);
+    nameDiv.appendChild(document.createTextNode(s.days[i]));
     var dateSpan = document.createElement('span');
-    dateSpan.className = 'day-date';
+    dateSpan.className   = 'day-date';
     dateSpan.textContent = formatDate(date);
-    nameDiv.appendChild(nameText);
     nameDiv.appendChild(dateSpan);
 
-    // Main input
-    var input = document.createElement('input');
-    input.type = 'number';
-    input.id = 'primary-' + i;
-    input.className = 'day-input';
-    input.placeholder = isHourly ? s.phHours : s.phRevenue;
-    input.min = '0';
-    input.step = isHourly ? '0.25' : '0.01';
-    input.addEventListener('input', function() { recalc(); saveData(); });
+    var inp = document.createElement('input');
+    inp.type        = 'number';
+    inp.id          = 'primary-' + i;
+    inp.className   = 'day-input';
+    inp.placeholder = isHourly ? s.phHours : s.phRevenue;
+    inp.min         = '0';
+    inp.step        = isHourly ? '0.25' : '0.01';
+    inp.addEventListener('input', function() { recalc(); saveData(); });
 
-    // Middle col: commission amount
     var midDiv = document.createElement('div');
-    midDiv.className = 'day-mid';
-    midDiv.id = 'mid-' + i;
+    midDiv.className   = 'day-mid';
+    midDiv.id          = 'mid-' + i;
     midDiv.textContent = '—';
 
-    // Right col: day pay
     var payDiv = document.createElement('div');
-    payDiv.className = 'day-pay';
-    payDiv.id = 'pay-' + i;
+    payDiv.className   = 'day-pay';
+    payDiv.id          = 'pay-' + i;
     payDiv.textContent = '—';
 
     row.appendChild(nameDiv);
-    row.appendChild(input);
+    row.appendChild(inp);
     row.appendChild(midDiv);
     row.appendChild(payDiv);
     container.appendChild(row);
@@ -972,85 +920,69 @@ function buildDayRows() {
 }
 
 /* =====================
-   FORMAT
+   HELPERS
    ===================== */
 function fmt(n) {
   return 'A$' + n.toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function fmtHrs(n) {
-  return n % 1 === 0 ? n + ' hrs' : n.toFixed(2) + ' hrs';
+function getVal(id) {
+  var el  = document.getElementById(id);
+  var val = parseFloat(el.value);
+  return isNaN(val) ? (parseFloat(el.placeholder) || 0) : val;
 }
 
 /* =====================
    RECALC
    ===================== */
-function getVal(id) {
-  var el  = document.getElementById(id);
-  var val = parseFloat(el.value);
-  if (isNaN(val)) val = parseFloat(el.placeholder) || 0;
-  return val;
-}
-
 function recalc() {
-  var dailyBase = getVal('baseSalary');
-  var isHourly  = commMode === 'hourly';
-  var rate      = isHourly ? getVal('hourlyRate') : getVal('commissionRate');
-
-  var s             = STRINGS[lang];
-  var totalPrimary  = 0; // revenue (pct) or hours (hourly)
-  var totalComm     = 0;
-  var totalFinalPay = 0;
-  var daysWorked    = 0;
+  var dailyBase    = getVal('baseSalary');
+  var isHourly     = commMode === 'hourly';
+  var rate         = isHourly ? getVal('hourlyRate') : getVal('commissionRate');
+  var s            = STRINGS[lang];
+  var totalPrimary = 0, totalComm = 0, totalFinalPay = 0, daysWorked = 0;
 
   for (var i = 0; i < 7; i++) {
-    var inputEl = document.getElementById('primary-' + i);
-    var midEl   = document.getElementById('mid-' + i);
-    var payEl   = document.getElementById('pay-' + i);
-    if (!inputEl) continue;
+    var inp   = document.getElementById('primary-' + i);
+    var midEl = document.getElementById('mid-' + i);
+    var payEl = document.getElementById('pay-' + i);
+    if (!inp) continue;
 
-    var primary = parseFloat(inputEl.value) || 0;
-    var comm    = isHourly ? (primary * rate) : (primary * rate / 100);
+    var primary = parseFloat(inp.value) || 0;
+    var comm    = isHourly ? primary * rate : primary * rate / 100;
 
     if (primary > 0) {
       daysWorked++;
       totalPrimary += primary;
       totalComm    += comm;
-
       midEl.textContent = fmt(comm);
 
       if (comm > dailyBase) {
-        totalFinalPay += comm;
-        midEl.className = 'day-mid is-active';
+        totalFinalPay    += comm;
+        midEl.className   = 'day-mid is-active';
         payEl.textContent = fmt(comm);
         payEl.className   = 'day-pay is-commission';
       } else {
-        totalFinalPay += dailyBase;
-        midEl.className = 'day-mid';
+        totalFinalPay    += dailyBase;
+        midEl.className   = 'day-mid';
         payEl.textContent = fmt(dailyBase);
         payEl.className   = 'day-pay is-base';
       }
     } else {
-      midEl.textContent = '—';
-      midEl.className   = 'day-mid';
-      payEl.textContent = '—';
-      payEl.className   = 'day-pay';
+      midEl.textContent = '—'; midEl.className = 'day-mid';
+      payEl.textContent = '—'; payEl.className = 'day-pay';
     }
   }
 
-  // Summary stats
-  if (isHourly) {
-    document.getElementById('totalRevenue').textContent = fmtHrs(totalPrimary);
-  } else {
-    document.getElementById('totalRevenue').textContent = fmt(totalPrimary);
-  }
+  document.getElementById('totalRevenue').textContent =
+    isHourly ? (totalPrimary % 1 === 0 ? totalPrimary + ' hrs' : totalPrimary.toFixed(2) + ' hrs')
+             : fmt(totalPrimary);
   document.getElementById('totalCommission').textContent = fmt(totalComm);
   document.getElementById('finalPay').textContent        = fmt(totalFinalPay);
 
-  // Mode badge
-  var badge   = document.getElementById('modeBadge');
-  var hint    = document.getElementById('calcHint');
-  var tipBox  = document.getElementById('tipBox');
+  var badge  = document.getElementById('modeBadge');
+  var hint   = document.getElementById('calcHint');
+  var tipBox = document.getElementById('tipBox');
 
   if (totalPrimary === 0) {
     badge.className   = 'mode-badge is-base';
@@ -1058,14 +990,10 @@ function recalc() {
     hint.textContent  = '';
     tipBox.classList.remove('is-visible');
   } else {
-    if (totalComm > dailyBase * daysWorked) {
-      badge.className   = 'mode-badge is-commission';
-      badge.textContent = s.moreComm;
-    } else {
-      badge.className   = 'mode-badge is-base';
-      badge.textContent = s.moreBase;
-    }
-    hint.textContent = isHourly
+    var commWins      = totalComm > dailyBase * daysWorked;
+    badge.className   = commWins ? 'mode-badge is-commission' : 'mode-badge is-base';
+    badge.textContent = commWins ? s.moreComm : s.moreBase;
+    hint.textContent  = isHourly
       ? s.hintHourly(fmt(dailyBase), rate)
       : s.hintPercent(fmt(dailyBase), rate);
     tipBox.classList.remove('is-visible');
@@ -1083,39 +1011,39 @@ function saveData() {
     var el = document.getElementById('primary-' + i);
     values.push(el ? el.value : '');
   }
-  var weekData = {
+  var data = {
     baseSalary:     document.getElementById('baseSalary').value,
     commissionRate: document.getElementById('commissionRate').value,
     hourlyRate:     document.getElementById('hourlyRate').value,
     values:         values
   };
-  localStorage.setItem(getWeekKey(weekOffset), JSON.stringify(weekData));
+  localStorage.setItem(getWeekKey(weekOffset), JSON.stringify(data));
   localStorage.setItem('salary_settings', JSON.stringify({
-    baseSalary:     weekData.baseSalary,
-    commissionRate: weekData.commissionRate,
-    hourlyRate:     weekData.hourlyRate,
+    baseSalary:     data.baseSalary,
+    commissionRate: data.commissionRate,
+    hourlyRate:     data.hourlyRate,
     commMode:       commMode
   }));
 }
 
 function loadData() {
-  var settings = JSON.parse(localStorage.getItem('salary_settings') || '{}');
-  if (settings.baseSalary)     document.getElementById('baseSalary').value     = settings.baseSalary;
-  if (settings.commissionRate) document.getElementById('commissionRate').value = settings.commissionRate;
-  if (settings.hourlyRate)     document.getElementById('hourlyRate').value     = settings.hourlyRate;
+  var s = JSON.parse(localStorage.getItem('salary_settings') || '{}');
+  if (s.baseSalary)     document.getElementById('baseSalary').value     = s.baseSalary;
+  if (s.commissionRate) document.getElementById('commissionRate').value = s.commissionRate;
+  if (s.hourlyRate)     document.getElementById('hourlyRate').value     = s.hourlyRate;
 
-  var weekData = JSON.parse(localStorage.getItem(getWeekKey(weekOffset)) || '{}');
-  if (weekData.values) {
-    for (var i = 0; i < weekData.values.length; i++) {
+  var w = JSON.parse(localStorage.getItem(getWeekKey(weekOffset)) || '{}');
+  if (w.values) {
+    for (var i = 0; i < w.values.length; i++) {
       var el = document.getElementById('primary-' + i);
-      if (el) el.value = weekData.values[i];
+      if (el) el.value = w.values[i];
     }
   }
   recalc();
 }
 
 /* =====================
-   CLEAR
+   CLEAR / COPY
    ===================== */
 function clearWeek() {
   if (!confirm(STRINGS[lang].confirmClear)) return;
@@ -1127,21 +1055,18 @@ function clearWeek() {
   recalc();
 }
 
-/* =====================
-   COPY
-   ===================== */
 function copyResult() {
   var s         = STRINGS[lang];
   var dailyBase = getVal('baseSalary');
   var isHourly  = commMode === 'hourly';
   var rate      = isHourly ? getVal('hourlyRate') : getVal('commissionRate');
-  var start = getWeekStart(weekOffset);
-  var end   = new Date(start);
+  var start     = getWeekStart(weekOffset);
+  var end       = new Date(start);
   end.setDate(start.getDate() + 6);
 
   var lines = [
     s.copyHeader,
-    s.copyPeriod(formatDate(start), formatDate(end)),
+    s.copyPeriod(formatDateFull(start), formatDateFull(end)),
     isHourly ? s.copySettingsHr(dailyBase.toFixed(2), rate) : s.copySettingsPct(dailyBase.toFixed(2), rate),
     ''
   ];
@@ -1152,24 +1077,20 @@ function copyResult() {
     var primary = el ? (parseFloat(el.value) || 0) : 0;
     if (primary > 0) {
       totalPrimary += primary;
-      var comm   = isHourly ? (primary * rate) : (primary * rate / 100);
+      var comm   = isHourly ? primary * rate : primary * rate / 100;
       var dayPay = comm > dailyBase ? comm : dailyBase;
       var d      = new Date(start);
       d.setDate(start.getDate() + i);
-      if (isHourly) {
-        lines.push(s.copyRowHr(s.days[i], formatDate(d), primary, fmt(comm), fmt(dayPay)));
-      } else {
-        lines.push(s.copyRowPct(s.days[i], formatDate(d), fmt(primary), fmt(comm), fmt(dayPay)));
-      }
+      lines.push(isHourly
+        ? s.copyRowHr(s.days[i], formatDate(d), primary, fmt(comm), fmt(dayPay))
+        : s.copyRowPct(s.days[i], formatDate(d), fmt(primary), fmt(comm), fmt(dayPay)));
     }
   }
 
   lines.push('');
-  if (isHourly) {
-    lines.push(s.copyTotalHrs(totalPrimary));
-  } else {
-    lines.push(s.copyTotal(document.getElementById('totalRevenue').textContent));
-  }
+  lines.push(isHourly
+    ? s.copyTotalHrs(totalPrimary)
+    : s.copyTotal(document.getElementById('totalRevenue').textContent));
   lines.push(s.copyComm(document.getElementById('totalCommission').textContent));
   lines.push(s.copyFinal(document.getElementById('finalPay').textContent));
 
@@ -1184,16 +1105,17 @@ function copyResult() {
    INIT
    ===================== */
 (function() {
-  // Restore saved comm mode
-  var savedSettings = JSON.parse(localStorage.getItem('salary_settings') || '{}');
-  if (savedSettings.commMode) commMode = savedSettings.commMode;
+  var saved = JSON.parse(localStorage.getItem('salary_settings') || '{}');
+  if (saved.commMode) {
+    commMode = saved.commMode;
+    document.getElementById('btnModePercent').classList.toggle('is-active', commMode === 'percent');
+    document.getElementById('btnModeHourly').classList.toggle('is-active', commMode === 'hourly');
+    document.getElementById('field-percent').style.display = commMode === 'percent' ? '' : 'none';
+    document.getElementById('field-hourly').style.display  = commMode === 'hourly'  ? '' : 'none';
+  }
 
   document.getElementById('btnZh').classList.toggle('is-active', lang === 'zh');
   document.getElementById('btnEn').classList.toggle('is-active', lang === 'en');
-  document.getElementById('btnModePercent').classList.toggle('is-active', commMode === 'percent');
-  document.getElementById('btnModeHourly').classList.toggle('is-active', commMode === 'hourly');
-  document.getElementById('field-percent').style.display = commMode === 'percent' ? '' : 'none';
-  document.getElementById('field-hourly').style.display  = commMode === 'hourly'  ? '' : 'none';
 
   applyStrings();
   updateWeekLabel();
