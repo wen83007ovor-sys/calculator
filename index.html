@@ -314,18 +314,23 @@ margin-bottom: 24px;
 background-color: #272b3d;
 border: 2px solid #3e4560;
 border-radius: var(–radius);
-padding: 14px 20px;
-display: grid;
-grid-template-columns: 90px 1fr 120px 110px;
-gap: 12px;
-align-items: center;
+padding: 14px 18px;
 box-shadow: 0 2px 10px rgba(0,0,0,0.35);
-transition: border-color 0.2s, transform 0.15s;
+transition: border-color 0.2s;
+display: flex;
+flex-direction: column;
+gap: 10px;
 }
 
 .day-row:hover {
 border-color: #68c496;
-transform: translateX(2px);
+}
+
+/* Top row: name/date + input */
+.day-row-top {
+display: flex;
+align-items: center;
+gap: 12px;
 }
 
 .day-name {
@@ -334,6 +339,7 @@ font-size: 14px;
 display: flex;
 flex-direction: column;
 gap: 2px;
+min-width: 68px;
 }
 
 .day-date {
@@ -348,40 +354,74 @@ border: 1px solid #3e4560;
 border-radius: 8px;
 color: #dde2f0;
 font-family: ‘DM Mono’, monospace;
-font-size: 14px;
+font-size: 15px;
 padding: 8px 12px;
 outline: none;
-width: 100%;
+flex: 1;
 transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .day-input:focus {
-border-color: var(–neutral);
-box-shadow: 0 0 0 3px var(–focus-neu);
+border-color: #68aee0;
+box-shadow: 0 0 0 3px rgba(104,174,224,0.16);
 }
 
-.day-mid {
+/* Bottom row: commission breakdown + final pay badge */
+.day-row-bottom {
+display: none;
+align-items: center;
+justify-content: space-between;
+gap: 8px;
+flex-wrap: wrap;
+}
+
+.day-row-bottom.is-visible {
+display: flex;
+}
+
+.day-breakdown {
+font-family: ‘DM Mono’, monospace;
+font-size: 12px;
+color: var(–muted);
+}
+
+.day-breakdown .comm-val {
+color: #68aee0;
+}
+
+.day-breakdown .separator {
+margin: 0 6px;
+opacity: 0.4;
+}
+
+.day-pay-badge {
 font-family: ‘DM Mono’, monospace;
 font-size: 13px;
-color: var(–muted);
-text-align: right;
-transition: color 0.2s;
-}
-
-.day-mid.is-active {
-color: var(–neutral);
-}
-
-.day-pay {
-font-family: ‘DM Mono’, monospace;
-font-size: 14px;
 font-weight: 600;
-text-align: right;
-color: var(–muted);
+padding: 3px 10px;
+border-radius: 6px;
 }
 
-.day-pay.is-commission { color: var(–positive); }
-.day-pay.is-base       { color: var(–neutral); }
+.day-pay-badge.is-commission {
+background-color: rgba(104,196,150,0.15);
+color: #68c496;
+border: 1px solid rgba(104,196,150,0.35);
+}
+
+.day-pay-badge.is-base {
+background-color: rgba(104,174,224,0.15);
+color: #68aee0;
+border: 1px solid rgba(104,174,224,0.35);
+}
+
+.day-pay-label {
+font-size: 10px;
+font-weight: 400;
+opacity: 0.7;
+margin-right: 4px;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+}
 
 /* =====================
 RESULT CARD
@@ -568,8 +608,6 @@ RESPONSIVE
 ===================== */
 @media (max-width: 600px) {
 .settings-grid { grid-template-columns: 1fr 1fr; }
-.day-row       { grid-template-columns: 80px 1fr 90px; }
-.day-pay       { display: none; }
 }
 
 @media (max-width: 400px) {
@@ -712,6 +750,10 @@ var STRINGS = {
     noData:         '尚未輸入',
     moreComm:       '抽成制為主',
     moreBase:       '底薪制為主',
+    lblComm:        '抽成',
+    lblOverBase:    '超過保底 ✓',
+    lblBase2:       '未達保底',
+    lblPay:         '實領',
     hintPercent:    function(b,r){ return '每日底薪 '+b+'，超過則用業績 × '+r+'%'; },
     hintHourly:     function(b,r){ return '每日底薪 '+b+'，超過則用工時 × A$'+r+'/hr'; },
     copyHeader:     '📊 週薪計算紀錄',
@@ -753,6 +795,10 @@ var STRINGS = {
     noData:         'No data yet',
     moreComm:       'Mostly Commission',
     moreBase:       'Mostly Base Pay',
+    lblComm:        'Comm',
+    lblOverBase:    'Beats base ✓',
+    lblBase2:       'Under base',
+    lblPay:         'Pay',
     hintPercent:    function(b,r){ return 'Base '+b+'/day; commission if revenue × '+r+'% > base'; },
     hintHourly:     function(b,r){ return 'Base '+b+'/day; commission if hours × A$'+r+' > base'; },
     copyHeader:     '📊 Weekly Pay Record',
@@ -888,6 +934,10 @@ function buildDayRows() {
     row.className = 'day-row';
     row.id = 'row-' + i;
 
+    /* ---- Top: name + input ---- */
+    var topDiv = document.createElement('div');
+    topDiv.className = 'day-row-top';
+
     var nameDiv = document.createElement('div');
     nameDiv.className = 'day-name';
     nameDiv.appendChild(document.createTextNode(s.days[i]));
@@ -905,20 +955,29 @@ function buildDayRows() {
     inp.step        = isHourly ? '0.25' : '0.01';
     inp.addEventListener('input', function() { recalc(); saveData(); });
 
-    var midDiv = document.createElement('div');
-    midDiv.className   = 'day-mid';
-    midDiv.id          = 'mid-' + i;
-    midDiv.textContent = '—';
+    topDiv.appendChild(nameDiv);
+    topDiv.appendChild(inp);
 
-    var payDiv = document.createElement('div');
-    payDiv.className   = 'day-pay';
-    payDiv.id          = 'pay-' + i;
-    payDiv.textContent = '—';
+    /* ---- Bottom: breakdown + pay badge ---- */
+    var bottomDiv = document.createElement('div');
+    bottomDiv.className = 'day-row-bottom';
+    bottomDiv.id        = 'bottom-' + i;
 
-    row.appendChild(nameDiv);
-    row.appendChild(inp);
-    row.appendChild(midDiv);
-    row.appendChild(payDiv);
+    // breakdown text: e.g. "抽成 A$80.00 < 保底 A$100.00"
+    var breakdownSpan = document.createElement('span');
+    breakdownSpan.className = 'day-breakdown';
+    breakdownSpan.id        = 'breakdown-' + i;
+
+    // pay badge: shows actual day pay
+    var payBadge = document.createElement('span');
+    payBadge.className = 'day-pay-badge';
+    payBadge.id        = 'pay-' + i;
+
+    bottomDiv.appendChild(breakdownSpan);
+    bottomDiv.appendChild(payBadge);
+
+    row.appendChild(topDiv);
+    row.appendChild(bottomDiv);
     container.appendChild(row);
   }
 }
@@ -947,9 +1006,10 @@ function recalc() {
   var totalPrimary = 0, totalComm = 0, totalFinalPay = 0, daysWorked = 0;
 
   for (var i = 0; i < 7; i++) {
-    var inp   = document.getElementById('primary-' + i);
-    var midEl = document.getElementById('mid-' + i);
-    var payEl = document.getElementById('pay-' + i);
+    var inp       = document.getElementById('primary-' + i);
+    var bottomEl  = document.getElementById('bottom-' + i);
+    var breakEl   = document.getElementById('breakdown-' + i);
+    var payEl     = document.getElementById('pay-' + i);
     if (!inp) continue;
 
     var primary = parseFloat(inp.value) || 0;
@@ -959,22 +1019,37 @@ function recalc() {
       daysWorked++;
       totalPrimary += primary;
       totalComm    += comm;
-      midEl.textContent = fmt(comm);
+
+      bottomEl.classList.add('is-visible');
 
       if (comm > dailyBase) {
-        totalFinalPay    += comm;
-        midEl.className   = 'day-mid is-active';
-        payEl.textContent = fmt(comm);
-        payEl.className   = 'day-pay is-commission';
+        totalFinalPay += comm;
+
+        // e.g. "抽成 A$160.00 ✓ 超過保底"
+        breakEl.innerHTML =
+          '<span class="comm-val">' + s.lblComm + ' ' + fmt(comm) + '</span>' +
+          '<span class="separator">›</span>' +
+          s.lblOverBase;
+
+        payEl.className   = 'day-pay-badge is-commission';
+        payEl.innerHTML   = '<span class="day-pay-label">' + s.lblPay + '</span>' + fmt(comm);
+
       } else {
-        totalFinalPay    += dailyBase;
-        midEl.className   = 'day-mid';
-        payEl.textContent = fmt(dailyBase);
-        payEl.className   = 'day-pay is-base';
+        totalFinalPay += dailyBase;
+
+        // e.g. "抽成 A$80.00 未達 保底 A$100.00"
+        breakEl.innerHTML =
+          s.lblComm + ' <span class="comm-val">' + fmt(comm) + '</span>' +
+          '<span class="separator">‹</span>' +
+          s.lblBase2 + ' ' + fmt(dailyBase);
+
+        payEl.className   = 'day-pay-badge is-base';
+        payEl.innerHTML   = '<span class="day-pay-label">' + s.lblPay + '</span>' + fmt(dailyBase);
       }
     } else {
-      midEl.textContent = '—'; midEl.className = 'day-mid';
-      payEl.textContent = '—'; payEl.className = 'day-pay';
+      bottomEl.classList.remove('is-visible');
+      if (breakEl) breakEl.innerHTML = '';
+      if (payEl)   { payEl.className = 'day-pay-badge'; payEl.innerHTML = ''; }
     }
   }
 
